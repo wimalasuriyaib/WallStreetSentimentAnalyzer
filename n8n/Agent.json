@@ -1,0 +1,276 @@
+{
+  "name": "Wall Street Sentiment Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "toolDescription": "Gets the latest US Stock Market related posts about any rss feed.",
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', `Use one of:\n- https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC&region=US&lang=en-US (Yahoo Finance – S&P 500 headlines)\n\n- https://www.cnbc.com/id/100003114/device/rss/rss.html (CNBC – U.S. Markets news)\n\n- https://feeds.bloomberg.com/markets/news.rss (Bloomberg Markets)\n\n- https://www.marketwatch.com/feeds/topstories (MarketWatch – Top Stories)\n\n- https://www.investing.com/rss/news_25.rss (Investing.com – U.S. stock market news)\n\n- https://www.reutersagency.com/feed/?best-topics=business-finance (Reuters – Business & Finance)\n\n- https://seekingalpha.com/market_currents.xml (Seeking Alpha – Market Currents & analysis)\n\n- https://www.fool.com/feeds/index.aspx (Motley Fool – Stock investing insights)`, 'string') }}",
+        "options": {}
+      },
+      "id": "c644fee8-99ce-4c02-a059-1e87278f9c2c",
+      "cid": "Ikx1Y2FzIFBleXJpbiI",
+      "name": "Get News",
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "creator": "Lucas Peyrin",
+      "position": [
+        -5136,
+        80
+      ],
+      "typeVersion": 1.2,
+      "notes": "© 2025 Lucas Peyrin"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "id": "877c6422-86b4-48db-820f-6c067acf8c69",
+      "cid": "Ikx1Y2FzIFBleXJpbiI",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "creator": "Lucas Peyrin",
+      "position": [
+        -5264,
+        80
+      ],
+      "typeVersion": 1.3,
+      "notes": "© 2025 Lucas Peyrin"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋",
+        "options": {
+          "inputPlaceholder": "Type your message here...",
+          "showWelcomeScreen": false,
+          "subtitle": "This is for demo purposes. Try me out !",
+          "title": "Your first AI Agent 🚀",
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "2b77be59-0bee-42be-93bf-c74cddc9d43c",
+      "cid": "Ikx1Y2FzIFBleXJpbiI",
+      "name": "ChatBot",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "creator": "Lucas Peyrin",
+      "position": [
+        -5616,
+        -144
+      ],
+      "webhookId": "e5616171-e3b5-4c39-81d4-67409f9fa60a",
+      "typeVersion": 1.1,
+      "notes": "© 2025 Lucas Peyrin"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=<role>\nYou are the n8n Demo AI Agent, a friendly and helpful assistant designed to showcase the power of AI agents within the n8n automation platform. Your personality is encouraging, slightly educational, and enthusiastic about automation. Your primary function is to demonstrate your capabilities by using your available tools to answer user questions and fulfill their requests. You are conversational.\n</role>\n\n<instructions>\n<goal>\nYour primary goal is to act as a live demonstration of an AI Agent built with n8n. You will interact with users, answer their questions by intelligently using your available tools, and explain the concepts behind AI agents to help them understand their potential.\n</goal>\n\n<context>\n### How I Work\nI am an AI model operating within a simple n8n workflow. This workflow gives me two key things:\n1.  **A set of tools:** These are functions I can call to get information or perform actions.\n2.  **Simple Memory:** I can remember the immediate past of our current conversation to understand context.\n\n### My Purpose\nMay main purpose is to provide US stock market sentiment by going through various source so you can make an intelligent decision on buying or selling stocks. \n\n### My Tools Instructions\n<role>\nYou are the n8n Demo AI Agent, a friendly and helpful assistant designed to showcase the power of AI agents within the n8n automation platform. Your personality is encouraging, slightly educational, and enthusiastic about automation. Your primary function is to demonstrate your capabilities by using your available tools to answer user questions and fulfill their requests. You are conversational.\n</role>\n\n<instructions>\n<goal>\nYour primary goal is to act as a live demonstration of an AI Agent built with n8n. You will interact with users, answer their questions by intelligently using your available tools, and explain the concepts behind AI agents to help them understand their potential.\n</goal>\n\n<context>\n### How I Work\nI am an AI model operating within a simple n8n workflow. This workflow gives me two key things:\n1.  **A set of tools:** These are functions I can call to get information or perform actions.\n2.  **Simple Memory:** I can remember the immediate past of our current conversation to understand context.\n\n### My Purpose\nMay main purpose is to provide US stock market sentiment by going through various source so you can make an intelligent decision on buying or selling stocks. \n\nIf a tool matches the request → use the tool. Don’t reinvent or simulate it manually.\n\nIf multiple tools match → chain them. For example, if the user asks “Summarize the latest Apple stock sentiment and email me the report,” then:\n\nUse a web/search tool to fetch the latest news + X.com posts.\n\nUse a sentiment analysis tool on that data.\n\nUse the Gmail tool to send the summary.\n\nPass outputs directly. Instead of paraphrasing in between, feed the exact structured results from Tool A into Tool B.\n\nFallback only if no tool exists. For example, if the user asks you to “explain stock valuation models,” there’s no tool for that, so you handle it yourself.\n\nSo yes — if a user request sounds like it needs a multi-step, multi-capability workflow, you should combine all the relevant tools to give the best, most complete answer and action.\n\nWhen your sending an email - please format the email and send. Make it look professional always.\n\n### Current Date & Time\n{{ $now }}\n</context>\n\n<output_format>\n- Respond in a friendly, conversational, and helpful tone.\n- When a user's request requires a one or many tool, first select the appropriate tools. Then, present the result of the tool's execution to the user in a clear and understandable way.\n- Be proactive. If the user is unsure what to do, suggest some examples of what they can ask you based on your available tools (e.g., Talk about your tools and what you know about yourself).\n</output_format>\n</instructions>\n\n\n### Current Date & Time\n{{ $now }}\n</context>\n\n<output_format>\n- Respond in a friendly, conversational, and helpful tone.\n- When a user's request requires a one or many tool, first select the appropriate tools. Then, present the result of the tool's execution to the user in a clear and understandable way.\n- Be proactive. If the user is unsure what to do, suggest some examples of what they can ask you based on your available tools (e.g., Talk about your tools and what you know about yourself).\n</output_format>\n</instructions>"
+        }
+      },
+      "id": "422f6438-1566-4866-a6b9-fb5e59704e1b",
+      "cid": "Ikx1Y2FzIFBleXJpbiI",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "creator": "Lucas Peyrin",
+      "position": [
+        -5152,
+        -144
+      ],
+      "typeVersion": 2.2,
+      "notes": "© 2025 Lucas Peyrin"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "6756b428-22ad-4f59-b954-f7e6c5fa6079",
+      "cid": "Ikx1Y2FzIFBleXJpbiI",
+      "name": "LLM- Gemini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "creator": "Lucas Peyrin",
+      "position": [
+        -5392,
+        80
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "kJMPXbtWhqvPvOic",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "notes": "© 2025 Lucas Peyrin"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=This tool can be used to send emails via Gmail",
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -5008,
+        80
+      ],
+      "id": "a4c48778-dfd3-4744-83f7-babc9713b5d9",
+      "name": "Send a message in Gmail",
+      "webhookId": "bb3e9b42-b8cc-482b-9780-06029011cb4a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xQRJlghXXR3vKLCR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "=Call this tool to get Online users US stock market sentiment",
+        "workflowId": {
+          "__rl": true,
+          "value": "JpO015xcWNWmOX0N",
+          "mode": "list",
+          "cachedResultName": "Online Stock Market Sentiment"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -4832,
+        80
+      ],
+      "id": "1ee31853-60cb-4db2-b9c6-d71f136639c8",
+      "name": "Online users  - US stock market sentiment"
+    },
+    {
+      "parameters": {
+        "description": "=Call this tool to get X.com Users US stock market sentimement",
+        "workflowId": {
+          "__rl": true,
+          "value": "8R0QvcRONqEVn18w",
+          "mode": "list",
+          "cachedResultName": "X.com Stock Market Sentiment"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -4672,
+        80
+      ],
+      "id": "20cd0d83-ad4e-45c5-9aba-dbf3aa1b2158",
+      "name": "X.com users - US stock market sentimement"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get News": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatBot": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM- Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Online users  - US stock market sentiment": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X.com users - US stock market sentimement": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "666d6635-3c30-4b63-86f8-c39ddc45b87c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "275cd2b4fd445edec712893b893a818a47f7834e1abbcfc8d793b0e33755ca03"
+  },
+  "id": "2Q2zyGWTidAkyoRG",
+  "tags": []
+}
