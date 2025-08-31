@@ -1,0 +1,336 @@
+{
+  "name": "X.com Stock Market Sentiment",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brightdata.com/datasets/v3/trigger",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "brightdataApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "dataset_id",
+              "value": "gd_mcswdt6z2elth3zqr2"
+            },
+            {
+              "name": "include_errors",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"url\": \"https://google.com/aimode\",\n    \"prompt\": \"What is the x.com users us stock market sentiment today\",\n    \"country\": \"US\"\n  }\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4112,
+        -144
+      ],
+      "id": "873fd2ba-4b07-407e-aa5b-599dc3aca775",
+      "name": "Google AI Search",
+      "credentials": {
+        "brightdataApi": {
+          "id": "CeqeVL2Kis3K2gDJ",
+          "name": "BrightData account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "webScrapper",
+        "operation": "downloadSnapshot",
+        "snapshot_id": "={{ $json.snapshot_id }}",
+        "requestOptions": {}
+      },
+      "type": "@brightdata/n8n-nodes-brightdata.brightData",
+      "typeVersion": 1,
+      "position": [
+        -3440,
+        -256
+      ],
+      "id": "c4fb954d-bbf4-4a20-b019-cf0f52be949a",
+      "name": "Download the snapshot content",
+      "credentials": {
+        "brightdataApi": {
+          "id": "CeqeVL2Kis3K2gDJ",
+          "name": "BrightData account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -3440,
+        -48
+      ],
+      "id": "235fe10b-e849-4291-96da-fb24d55c37f3",
+      "name": "Wait",
+      "webhookId": "168b8037-21ad-4652-8387-5a7789282bae"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a81e6f1b-05aa-47cd-9684-8510bfa4748a",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ready",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3664,
+        -208
+      ],
+      "id": "54f74669-7157-4b7b-bc6f-1e0dc2888fe5",
+      "name": "Check is ready"
+    },
+    {
+      "parameters": {
+        "resource": "webScrapper",
+        "operation": "monitorProgressSnapshot",
+        "snapshot_id": "={{ $json.snapshot_id }}",
+        "requestOptions": {}
+      },
+      "type": "@brightdata/n8n-nodes-brightdata.brightData",
+      "typeVersion": 1,
+      "position": [
+        -3888,
+        -144
+      ],
+      "id": "b8f887df-8eb4-4681-b2bb-b02d12884595",
+      "name": "Check snapshot status",
+      "credentials": {
+        "brightdataApi": {
+          "id": "CeqeVL2Kis3K2gDJ",
+          "name": "BrightData account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d7fe486f-f958-4cc3-950a-befb7eeee9b1",
+              "name": "answer_text",
+              "value": "={{ $json.answer_text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3216,
+        -256
+      ],
+      "id": "ddddb0b8-036e-46a9-94ee-4cc35f1a9fde",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "webScrapper",
+        "operation": "__CUSTOM_API_CALL__",
+        "requestOptions": {}
+      },
+      "type": "@brightdata/n8n-nodes-brightdata.brightData",
+      "typeVersion": 1,
+      "position": [
+        -4336,
+        -144
+      ],
+      "id": "c7efa5eb-db32-4d18-8254-aa1f6653c9b9",
+      "name": "webScrapper Google AI Search",
+      "credentials": {
+        "brightdataApi": {
+          "id": "CeqeVL2Kis3K2gDJ",
+          "name": "BrightData account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "=models/gemini-2.0-flash",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Can you sumrize this to 200 word blogpost -  {{ $json.answer_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2992,
+        -256
+      ],
+      "id": "a4ff1dad-08d4-4b64-b01c-1642efd2d15d",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "kJMPXbtWhqvPvOic",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4560,
+        -144
+      ],
+      "id": "0755df0b-afd9-4e88-b0ce-b96551d79490",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {
+    "Edit Fields": [
+      {
+        "json": {
+          "answer_text": "Market sentiment in the US stock market is currently mixed, with signs of both optimism and caution among investors.\n \nBullish Sentiment:\n \nBullish sentiment, which reflects expectations that stock prices will rise over the next six months, stands at 34.6%.\nThis is an increase from 30.84% the previous week, indicating a slight rise in optimism among individual investors.\nHowever, it remains below the historical average of 37.61%, suggesting that overall bullishness is still somewhat tempered.\n \nBearish Sentiment:\n \nBearish sentiment, indicating expectations of a market decline, is at 39.45%.\nThis is a decrease compared to 44.81% last week but is significantly higher than the 23.66% recorded a year ago.\nThe current level of bearish sentiment is also above the long-term average of 31.20%, suggesting a higher degree of caution or pessimism compared to historical norms.\n \nNeutral Sentiment:\n \nNeutral sentiment, reflecting expectations of no significant change in market direction, has increased, suggesting a degree of uncertainty among investors.\nSpecific figures for neutral sentiment were not provided in the search results.\n \nFactors Influencing Sentiment:\n \nEconomic Data:\n  Recent PCE and GDP data, along with Nvidia earnings, have been closely watched by the market.\nInflation Concerns:\n Data suggesting higher prices for consumers, potentially exacerbated by tariffs, is contributing to inflation concerns.\nLabor Market:\n The Federal Reserve is paying close attention to the labor market, with upcoming jobs data releases expected to be significant.\nInterest Rate Expectations:\n Bond markets are currently pricing in a high probability of an interest rate cut at the Fed's September 17 meeting.\n \nMarket Performance:\n \nDespite mixed sentiment, major stock indices remain near their all-time high prices.\nThe S&P 500, for instance, reached an all-time high recently.\nThe Nasdaq, while underperforming slightly for the week ending August 30, is still close to its record levels.\n \nOverall:\n \nThe US stock market sentiment is characterized by a blend of optimism and caution. While bullish sentiment has seen a slight increase, it remains below its historical average. Bearish sentiment, though down from the previous week, is elevated compared to historical norms and the previous year. This mixed sentiment reflects investor reactions to recent economic data, inflation concerns, labor market conditions, and evolving expectations regarding Federal Reserve policy.\n \nAI responses may include mistakes. For financial advice, consult a professional. \nLearn more\nCreating a public link...\nCan’t create link. Try again later.\nThank you\n\nYour feedback helps Google improve. See our \n\nPrivacy Policy\n\n.\nShare more feedback\nReport a problem\nClose"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google AI Search": {
+      "main": [
+        [
+          {
+            "node": "Check snapshot status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download the snapshot content": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check snapshot status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check is ready": {
+      "main": [
+        [
+          {
+            "node": "Download the snapshot content",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check snapshot status": {
+      "main": [
+        [
+          {
+            "node": "Check is ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "webScrapper Google AI Search": {
+      "main": [
+        [
+          {
+            "node": "Google AI Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "webScrapper Google AI Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c70b5bd5-d9c4-4a76-86a5-d5d4c4619dd8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "275cd2b4fd445edec712893b893a818a47f7834e1abbcfc8d793b0e33755ca03"
+  },
+  "id": "8R0QvcRONqEVn18w",
+  "tags": []
+}
